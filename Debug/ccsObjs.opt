@@ -1,0 +1,1 @@
+"./enc28j60.obj" "./ipstack.obj" "./main.obj" "./spi.obj" "../lnk_msp430f2274.cmd" -llibc.a 

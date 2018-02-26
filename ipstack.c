@@ -7,16 +7,120 @@
 // MAC address of the enc28j60
 const unsigned char deviceMAC[6] = {0x00,0xa0,0xc9,0x14,0xc8,0x00};
 // Router MAC is not known at beginning and requires an ARP reply to know.
-unsigned char routerMAC[6] = {0xff,0xff,0xff,0xff,0xff,0xff};
+//Establecer mac del router (access point) a conectar //todo:automatizar esto.
+unsigned char routerMAC[6] = {0xf4,0xdc,0xf9,0xb2,0x83,0xfe};
 // IP address of the enc28j60
-unsigned char deviceIP[4] = {192,168,0,153};
+unsigned char deviceIP[4] = {192,168,3,100};
 // IP address of the router
-unsigned char routerIP[4] = {192,168,0,1};
+unsigned char routerIP[4] = {192,168,3,1};
 
-unsigned char serverIP[4];
+unsigned char serverIP[4] = {192,168,3,11};
 
-unsigned char dnsIP[4] = {192,168,0,1};
+unsigned char dnsIP[4] = {8,8,8,8};
 
+/*
+ * negociación en tres pasos (SYN, SYN/ACK y ACK)
+ *
+ * */
+
+int IPstackHTMLPost(const char* url, const char* data, char* reply)
+{
+  //First we need to do some DNS looking up
+  //DNSLookup(url); //Fills in serverIP only if you don't know the IP
+  //Now that we have the IP we can connect to the server
+    /*Create a new packet*/
+  unsigned char packet[MAXPACKETLEN];
+/*Expand the memory assigned to packet according TCP Packet*/
+  memset(packet,0,sizeof(TCPhdr));//zero the memory as we need all flags = 0
+
+  //Syn server
+  /*Setup the packet according tcp protocol*/
+  SetupBasicIPPacket(packet, TCPPROTOCOL, serverIP);
+  TCPhdr* tcp = (TCPhdr*)packet;
+  /*Puerto de fuente */
+  tcp->sourcePort = HTONS(0xe2d7);
+  /*Puerto de destino 80*/
+  tcp->destPort = HTONS(80);
+  //Seq No and Ack No are zero
+  tcp->seqNo[0] = 1;
+  tcp->hdrLen = (sizeof(TCPhdr)-sizeof(IPhdr))/4;
+  tcp->SYN = 1;
+  tcp->wndSize = HTONS(200);
+  //Add in some basic options
+  unsigned char opts[] = { 0x02, 0x04,0x05,0xb4,0x01,0x01,0x04,0x02};
+  //memcpy(&tcp->options[0],&opts[0],8);
+
+  unsigned int len = sizeof(TCPhdr);
+
+  tcp->ip.len = HTONS(sizeof(TCPhdr)-sizeof(EtherNetII));
+  int pseudochksum = chksum(TCPPROTOCOL+len-sizeof(IPhdr), tcp->ip.source, 8);
+  tcp->chksum = HTONS(~(chksum(pseudochksum,packet + sizeof(IPhdr), len-sizeof(IPhdr))));
+  tcp->ip.chksum = HTONS(~(chksum(0, packet+sizeof(EtherNetII), sizeof(IPhdr)-sizeof(EtherNetII))));
+
+  MACWrite(packet,len);
+
+  /*Fin de etapa ACK*/
+
+  //ack syn/ack
+  /*Transmite los datos*/
+  do{
+      /*Obtiene los datos mientras el puerto de destino sea diferente al e2d7*/
+    GetPacket(TCPPROTOCOL, packet);
+  }while(!(tcp->destPort==HTONS(0xe2d7)));
+  /*Responde*/
+  ackTcp(tcp,len);
+  MACWrite( packet, len );
+
+  //Send the actual data
+  /*Copia los datos al paquete TCP*/
+  //first we need change to a push
+  tcp->PSH = 1;
+  tcp->ip.ident = 0xDEED;
+  //Now copy in the data
+  /*Copia los datos*/
+  int datalen = strlen(data);
+  memcpy( packet + sizeof(TCPhdr), data, datalen);
+  /*Ahora la longitud es la longitud del paquete más la longitud de los datos*/
+  len = sizeof(TCPhdr) + datalen;
+  /*Modifica algunos encabezados*/
+  tcp->ip.len = HTONS(len-sizeof(EtherNetII));
+  tcp->chksum = 0;
+  tcp->ip.chksum = 0;
+  pseudochksum = chksum(TCPPROTOCOL+len-sizeof(IPhdr),tcp->ip.source,sizeof(deviceIP)*2);
+  tcp->chksum = HTONS(~(chksum(pseudochksum, packet + sizeof(IPhdr),len-sizeof(IPhdr))));
+  tcp->ip.chksum = HTONS(~(chksum(0, packet + sizeof(EtherNetII), sizeof(IPhdr)-sizeof(EtherNetII))));
+  /*Manda el paquete*/
+  MACWrite(packet, len);
+  /*Lee las respuestas*/
+  do{
+    GetPacket(TCPPROTOCOL, packet);
+  }while(!(tcp->destPort==HTONS(0xe2d7)));
+  /*Copia la respuesta al paquete*/
+  memcpy( reply, packet + len -7, 7);
+  ackTcp(tcp, len);
+  MACWrite( packet, len);
+
+  /*Finaliza la transmisión*/
+  tcp->PSH=0;
+  tcp->FIN=1;
+  tcp->ACK=1;
+  tcp->chksum = 0;
+  tcp->ip.chksum = 0;
+  pseudochksum = chksum(TCPPROTOCOL+len-sizeof(IPhdr), tcp->ip.source, sizeof(deviceIP)*2);
+  tcp->chksum = HTONS(~(chksum(pseudochksum,packet + sizeof(IPhdr), len-sizeof(IPhdr))));
+  tcp->ip.chksum = HTONS(~(chksum(0, packet + sizeof(EtherNetII), sizeof(IPhdr)-sizeof(EtherNetII))));
+  MACWrite(packet,len);
+  memcpy(tcp, reply, sizeof(tcp));
+  //Now we need to copy the payload to the reply buffer and ack the reply
+  do{
+       /*Obtiene los datos mientras el puerto de destino sea diferente al e2d7*/
+     GetPacket(TCPPROTOCOL, packet);
+   }while(!(tcp->destPort==HTONS(0xe2d7)));
+   /*Responde*/
+   ackTcp(tcp,len);
+   MACWrite( packet, len );
+  return 0;
+}
 
 void
 add32(unsigned char *op32, unsigned int op16)
@@ -73,31 +177,39 @@ chksum(unsigned int sum, unsigned char *data, unsigned int len)
   /* Return sum in host byte order. */
   return sum;
 }
-
+/*Crea un nuevo paquete IP*/
 void SetupBasicIPPacket( unsigned char* packet, unsigned char protocol, unsigned char* destIP )
 {
+    /*Inicializa la estructura del paquete ip*/
   IPhdr* ip = (IPhdr*)packet;
-  
+  /*Define el tipo de IP*/
   ip->eth.type = HTONS(IPPACKET);
+  /*Copia a la direccion de destino de la IP la mac del router*/
   memcpy( ip->eth.DestAddrs, routerMAC, sizeof(routerMAC) );
+  /*Copia a la dirección del fuente la mac de este dispositivo*/
   memcpy( ip->eth.SrcAddrs, deviceMAC, sizeof(deviceMAC) );
-  
+  /*Establece la version del protocolo (v4)*/
   ip->version = 0x4;
+  /*Establece la dimension de hdr (5)*/
   ip->hdrlen = 0x5;
+
   ip->diffsf = 0;
   ip->ident = 2; //Chosen at random roll of dice
   ip->flags = 0x2;
   ip->fragmentOffset1 = 0x0;
   ip->fragmentOffset2 = 0x0;
+  /*Establece ttl en 128*/
   ip->ttl = 128;
+  /*Establece en char el protocolo (desde parámetro)*/
   ip->protocol = protocol;
   ip->chksum = 0x0;
+  /*Copia a la dirección de fuente la dirección ip de este dispositivo*/
   memcpy( ip->source , deviceIP, sizeof(deviceIP) );
+  /*Copia a la dirección de destino la ip de destino proporcionada como parámetro*/
   memcpy( ip->dest, destIP, sizeof(deviceIP) );
 }
 
-void SendArpPacket(unsigned char* targetIP)
-{
+void SendArpPacket(unsigned char* targetIP){
   ARP arpPacket;
   
   /*----Setup EtherNetII Header----*/
@@ -247,34 +359,44 @@ void PingReply(ICMPhdr* ping, unsigned int len)
     MACWrite((unsigned char*) ping, len);
   }
 }
-
-char GetPacket( int protocol, unsigned char* packet )
-{
-  for( unsigned char i = 0; i < 255; ++i)//Should make this return 0 after so many failed packets
-  {
+/*Método para obtener los paquetes donde se recibe un protocolo y un paquete*/
+char GetPacket(int protocol, unsigned char* packet){
+    unsigned char i = 0;
+    /*son de 254 bits (8 bytes)*/
+  for(i; i < 255; ++i){//Should make this return 0 after so many failed packets
+      /*declara la longitud del paquete (0)*/
     unsigned int len;
+    /*si la longitud corresponde a la longitud del paquete*/
     if ( len = MACRead( packet, MAXPACKETLEN ) )
     {
+        /*Convierte el paquete en Ethernet*/
       EtherNetII* eth = (EtherNetII*)packet;
+
+      /*Si es un paquete ARP*/
       if ( eth->type == HTONS(ARPPACKET) )
       {
+          /*Convierte el paquete en paquete ARP*/
         ARP* arpPacket = (ARP*)packet;
+        /*Si pide contestar contesta*/
         if ( arpPacket->opCode == HTONS(ARPREQUEST))
           //We have an arp and we should reply
           ReplyArpPacket(arpPacket);
       }
+      /*Si el paquete es IP*/
       else if( eth->type == HTONS(IPPACKET) )
       {
         //We have an IP packet and we need to check protocol.
         IPhdr* ip = (IPhdr*)packet;
+        /*Si el paquete es correcto regresa 1*/
         if( ip->protocol == protocol )
         {
           return 1;
         }
-        
+        /*Si el paquete es ICMP*/
         //Reply to any Pings
         if( ip->protocol == ICMPPROTOCOL )
         {
+            /*Responde al ping*/
           PingReply((ICMPhdr*)packet, len);
         }
       }
@@ -289,8 +411,8 @@ int IPstackInit()
   // Announce we are here
   SendArpPacket( deviceIP );
   // Just waste a bit of time confirming no one has our IP
-  for(unsigned int i = 0; i < 0x0fff; i++)
-  {
+  unsigned int i = 0;
+  for(i; i < 0x0fff; i++){
     ARP arpPacket;
     if( MACRead( (unsigned char*) &arpPacket, sizeof(ARP) ) )
     {
@@ -307,7 +429,8 @@ int IPstackInit()
   // Well no one replied so its safe to assume IP address is OK
   // Now we need to get the routers MAC address
   SendArpPacket( routerIP );
-  for(unsigned int i = 0; i < 0x5fff; i++)
+  i = 0;
+  for(i; i < 0x5fff; i++)
   {
     ARP arpPacket;
     if( MACRead( (unsigned char*) &arpPacket, sizeof(ARP) ) )
@@ -352,7 +475,8 @@ void DNSLookup( const char* url )
   //Add in question header
   char* dnsq = (char*)(packet + sizeof(DNShdr) + 1);//Note the +1
   int noChars = 0;
-  for( const char* c = url; *c != '\0' && *c !='\\'; ++c, ++dnsq)
+  char * c = url;
+  for(c; *c != '\0' && *c !='\\'; ++c, ++dnsq)
   {
     *dnsq = *c;
     if ( *c == '.' )
@@ -406,77 +530,6 @@ void DNSLookup( const char* url )
   }
 }
 
-int IPstackHTMLPost( const char* url, const char* data, char* reply)
-{
-  //First we need to do some DNS looking up
-  DNSLookup(url); //Fills in serverIP
-  //Now that we have the IP we can connect to the server
-  unsigned char packet[MAXPACKETLEN];
-  
-  memset(packet,0,sizeof(TCPhdr));//zero the memory as we need all flags = 0
-  
-  //Syn server
-  SetupBasicIPPacket( packet, TCPPROTOCOL, serverIP );
-  TCPhdr* tcp = (TCPhdr*)packet;
-  tcp->sourcePort = HTONS(0xe2d7);
-  tcp->destPort = HTONS(80);
-  //Seq No and Ack No are zero
-  tcp->seqNo[0] = 1;
-  tcp->hdrLen = (sizeof(TCPhdr)-sizeof(IPhdr))/4;
-  tcp->SYN = 1;
-  tcp->wndSize = HTONS(200);
-  //Add in some basic options
-  unsigned char opts[] = { 0x02, 0x04,0x05,0xb4,0x01,0x01,0x04,0x02};
-  //memcpy(&tcp->options[0],&opts[0],8);
-  unsigned int len = sizeof(TCPhdr);
-  tcp->ip.len = HTONS(sizeof(TCPhdr)-sizeof(EtherNetII));
-  int pseudochksum = chksum(TCPPROTOCOL+len-sizeof(IPhdr), tcp->ip.source, 8);
-  tcp->chksum = HTONS(~(chksum(pseudochksum,packet + sizeof(IPhdr), len-sizeof(IPhdr))));
-  tcp->ip.chksum = HTONS(~(chksum(0, packet+sizeof(EtherNetII), sizeof(IPhdr)-sizeof(EtherNetII))));
-  
-  MACWrite(packet,len);
-  //ack syn/ack
-  do{
-    GetPacket(TCPPROTOCOL, packet);
-  }while(!(tcp->destPort==HTONS(0xe2d7)));
-  ackTcp( tcp, len );
-  MACWrite( packet, len );
-  
-  //Send the actual data
-  //first we need change to a push
-  tcp->PSH = 1;
-  tcp->ip.ident = 0xDEED;
-  //Now copy in the data
-  int datalen = strlen(data);
-  memcpy( packet + sizeof(TCPhdr), data, datalen);
-  len = sizeof(TCPhdr) + datalen;
-  tcp->ip.len = HTONS(len-sizeof(EtherNetII));
-  tcp->chksum = 0;
-  tcp->ip.chksum = 0;
-  pseudochksum = chksum(TCPPROTOCOL+len-sizeof(IPhdr),tcp->ip.source,sizeof(deviceIP)*2);
-  tcp->chksum = HTONS(~(chksum(pseudochksum, packet + sizeof(IPhdr),len-sizeof(IPhdr))));
-  tcp->ip.chksum = HTONS(~(chksum(0, packet + sizeof(EtherNetII), sizeof(IPhdr)-sizeof(EtherNetII))));
-  MACWrite(packet, len);
-  
-  do{
-    GetPacket(TCPPROTOCOL, packet);
-  }while(!(tcp->destPort==HTONS(0xe2d7)));
-  memcpy( reply, packet + len -7, 7);
-  ackTcp(tcp, len);
-  MACWrite( packet, len);
-  
-  tcp->PSH=0;
-  tcp->FIN=1;
-  tcp->ACK=1;
-  tcp->chksum = 0;
-  tcp->ip.chksum = 0;
-  pseudochksum = chksum(TCPPROTOCOL+len-sizeof(IPhdr), tcp->ip.source, sizeof(deviceIP)*2);
-  tcp->chksum = HTONS(~(chksum(pseudochksum,packet + sizeof(IPhdr), len-sizeof(IPhdr))));
-  tcp->ip.chksum = HTONS(~(chksum(0, packet + sizeof(EtherNetII), sizeof(IPhdr)-sizeof(EtherNetII))));
-  MACWrite(packet,len);
-  //Now we need to copy the payload to the reply buffer and ack the reply
-  return 0;
-}
 
 int IPstackIdle()
 {

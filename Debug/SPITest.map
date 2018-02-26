@@ -1,0 +1,662 @@
+******************************************************************************
+                  MSP430 Linker PC v16.9.6                     
+******************************************************************************
+>> Linked Sun Feb 25 22:44:09 2018
+
+OUTPUT FILE NAME:   <SPITest.out>
+ENTRY POINT SYMBOL: "_c_int00_noargs_noexit"  address: 000094d6
+
+
+MEMORY CONFIGURATION
+
+         name            origin    length      used     unused   attr    fill
+----------------------  --------  ---------  --------  --------  ----  --------
+  SFR                   00000000   00000010  00000000  00000010  RWIX
+  PERIPHERALS_8BIT      00000010   000000f0  00000000  000000f0  RWIX
+  PERIPHERALS_16BIT     00000100   00000100  00000000  00000100  RWIX
+  RAM                   00000200   00000400  0000007e  00000382  RWIX
+  INFOD                 00001000   00000040  00000000  00000040  RWIX
+  INFOC                 00001040   00000040  00000000  00000040  RWIX
+  INFOB                 00001080   00000040  00000000  00000040  RWIX
+  INFOA                 000010c0   00000040  00000000  00000040  RWIX
+  FLASH                 00008000   00007fde  00001616  000069c8  RWIX
+  BSLSIGNATURE          0000ffde   00000002  00000002  00000000  RWIX  ffff 
+  INT00                 0000ffe0   00000002  00000000  00000002  RWIX
+  INT01                 0000ffe2   00000002  00000000  00000002  RWIX
+  INT02                 0000ffe4   00000002  00000002  00000000  RWIX
+  INT03                 0000ffe6   00000002  00000002  00000000  RWIX
+  INT04                 0000ffe8   00000002  00000000  00000002  RWIX
+  INT05                 0000ffea   00000002  00000002  00000000  RWIX
+  INT06                 0000ffec   00000002  00000002  00000000  RWIX
+  INT07                 0000ffee   00000002  00000002  00000000  RWIX
+  INT08                 0000fff0   00000002  00000002  00000000  RWIX
+  INT09                 0000fff2   00000002  00000002  00000000  RWIX
+  INT10                 0000fff4   00000002  00000002  00000000  RWIX
+  INT11                 0000fff6   00000002  00000000  00000002  RWIX
+  INT12                 0000fff8   00000002  00000002  00000000  RWIX
+  INT13                 0000fffa   00000002  00000002  00000000  RWIX
+  INT14                 0000fffc   00000002  00000002  00000000  RWIX
+  RESET                 0000fffe   00000002  00000002  00000000  RWIX
+
+
+SECTION ALLOCATION MAP
+
+ output                                  attributes/
+section   page    origin      length       input sections
+--------  ----  ----------  ----------   ----------------
+.data      0    00000200    00000020     UNINITIALIZED
+                  00000200    00000008     main.obj (.data:reply)
+                  00000208    00000006     ipstack.obj (.data:routerMAC)
+                  0000020e    00000004     ipstack.obj (.data:deviceIP)
+                  00000212    00000004     main.obj (.data)
+                  00000216    00000004     ipstack.obj (.data:routerIP)
+                  0000021a    00000004     ipstack.obj (.data:serverIP)
+                  0000021e    00000002     enc28j60.obj (.data)
+
+.bss       0    00000220    0000000e     UNINITIALIZED
+                  00000220    00000008     (.common:TxStatus)
+                  00000228    00000006     (.common:ptrRxStatus)
+
+.stack     0    000005b0    00000050     UNINITIALIZED
+                  000005b0    00000002     rts430_eabi.lib : boot.obj (.stack)
+                  000005b2    0000004e     --HOLE--
+
+.text      0    00008000    00001596     
+                  00008000    00000472     ipstack.obj (.text:IPstackHTMLPost)
+                  00008472    00000200     ipstack.obj (.text:ackTcp)
+                  00008672    00000178     enc28j60.obj (.text:initMAC)
+                  000087ea    00000146     enc28j60.obj (.text:MACWrite)
+                  00008930    0000010a     ipstack.obj (.text:SetupBasicIPPacket)
+                  00008a3a    000000fc     ipstack.obj (.text:IPstackInit)
+                  00008b36    000000e6     enc28j60.obj (.text:MACRead)
+                  00008c1c    000000da     ipstack.obj (.text:SendArpPacket)
+                  00008cf6    000000d6     ipstack.obj (.text:PingReply)
+                  00008dcc    000000c0     ipstack.obj (.text:GetPacket)
+                  00008e8c    000000a6     ipstack.obj (.text:ReplyArpPacket)
+                  00008f32    00000086     ipstack.obj (.text:chksum)
+                  00008fb8    0000007c     rts430_eabi.lib : copy_decompress_lzss.obj (.text:decompress:lzss:__TI_decompress_lzss)
+                  00009034    0000006e                     : autoinit.obj (.text:_auto_init)
+                  000090a2    0000006a     ipstack.obj (.text:add32)
+                  0000910c    0000005a     rts430_eabi.lib : cpy_tbl.obj (.text:copy_in)
+                  00009166    0000004e     spi.obj (.text:SPIRead)
+                  000091b4    0000004c     rts430_eabi.lib : lsr16.obj (.text)
+                  00009200    0000004a     spi.obj (.text:SPIWrite)
+                  0000924a    00000044     enc28j60.obj (.text:WritePhyReg)
+                  0000928e    0000003c     enc28j60.obj (.text:ClrBitField)
+                  000092ca    0000003c     enc28j60.obj (.text:SetBitField)
+                  00009306    0000003c     enc28j60.obj (.text:WriteCtrReg)
+                  00009342    0000003a     enc28j60.obj (.text:ReadMacBuffer)
+                  0000937c    0000003a     enc28j60.obj (.text:WriteMacBuffer)
+                  000093b6    00000034     enc28j60.obj (.text:ReadETHReg)
+                  000093ea    00000032     spi.obj (.text:initSPI)
+                  0000941c    0000002c     rts430_eabi.lib : lsl16.obj (.text)
+                  00009448    00000026     enc28j60.obj (.text:BankSel)
+                  0000946e    00000026     enc28j60.obj (.text:ResetMac)
+                  00009494    00000022     rts430_eabi.lib : memcmp.obj (.text:memcmp)
+                  000094b6    00000020     main.obj (.text:main)
+                  000094d6    0000001a     rts430_eabi.lib : boot_special.obj (.text:_c_int00_noargs_noexit)
+                  000094f0    00000014     ipstack.obj (.text:IPstackIdle)
+                  00009504    00000014     rts430_eabi.lib : copy_zero_init.obj (.text:decompress:ZI:__TI_zero_init)
+                  00009518    00000014                     : memset.obj (.text:memset)
+                  0000952c    00000014                     : mult16.obj (.text)
+                  00009540    00000012                     : copy_decompress_none.obj (.text:decompress:none:__TI_decompress_none)
+                  00009552    00000012                     : memcpy.obj (.text:memcpy)
+                  00009564    00000010                     : epilog.obj (.text)
+                  00009574    0000000e                     : strlen.obj (.text:strlen)
+                  00009582    00000008                     : isr_trap.obj (.text:_isr:__TI_ISR_TRAP)
+                  0000958a    00000006                     : exit.obj (.text:abort)
+                  00009590    00000004                     : pre_init.obj (.text:_system_pre_init)
+                  00009594    00000002                     : startup.obj (.text:_system_post_cinit)
+
+.binit     0    00008000    00000000     
+
+.const     0    00009596    0000004a     
+                  00009596    0000003c     main.obj (.const:.string)
+                  000095d2    00000008     ipstack.obj (.const:.string:$P$T0$1)
+                  000095da    00000006     ipstack.obj (.const:.string:deviceMAC)
+
+.cinit     0    000095e0    00000036     
+                  000095e0    00000024     (.cinit..data.load) [load image]
+                  00009604    00000006     (__TI_handler_table)
+                  0000960a    00000004     (.cinit..bss.load) [load image, compression = zero_init]
+                  0000960e    00000008     (__TI_cinit_table)
+
+.init_array 
+*          0    00008000    00000000     UNINITIALIZED
+
+PORT1      0    0000ffe4    00000002     
+                  0000ffe4    00000002     rts430_eabi.lib : int02.obj (.int02)
+
+PORT2      0    0000ffe6    00000002     
+                  0000ffe6    00000002     rts430_eabi.lib : int03.obj (.int03)
+
+$fill000   0    0000ffde    00000002     
+                  0000ffde    00000002     --HOLE-- [fill = ffff]
+
+ADC10      0    0000ffea    00000002     
+                  0000ffea    00000002     rts430_eabi.lib : int05.obj (.int05)
+
+USCIAB0TX 
+*          0    0000ffec    00000002     
+                  0000ffec    00000002     rts430_eabi.lib : int06.obj (.int06)
+
+USCIAB0RX 
+*          0    0000ffee    00000002     
+                  0000ffee    00000002     rts430_eabi.lib : int07.obj (.int07)
+
+TIMERA1    0    0000fff0    00000002     
+                  0000fff0    00000002     rts430_eabi.lib : int08.obj (.int08)
+
+TIMERA0    0    0000fff2    00000002     
+                  0000fff2    00000002     rts430_eabi.lib : int09.obj (.int09)
+
+WDT        0    0000fff4    00000002     
+                  0000fff4    00000002     rts430_eabi.lib : int10.obj (.int10)
+
+TIMERB1    0    0000fff8    00000002     
+                  0000fff8    00000002     rts430_eabi.lib : int12.obj (.int12)
+
+TIMERB0    0    0000fffa    00000002     
+                  0000fffa    00000002     rts430_eabi.lib : int13.obj (.int13)
+
+NMI        0    0000fffc    00000002     
+                  0000fffc    00000002     rts430_eabi.lib : int14.obj (.int14)
+
+.reset     0    0000fffe    00000002     
+                  0000fffe    00000002     rts430_eabi.lib : boot.obj (.reset)
+
+MODULE SUMMARY
+
+       Module                     code   ro data   rw data
+       ------                     ----   -------   -------
+    .\
+       ipstack.obj                3218   14        18     
+       enc28j60.obj               1424   0         16     
+       spi.obj                    202    0         0      
+       main.obj                   32     60        12     
+    +--+--------------------------+------+---------+---------+
+       Total:                     4876   74        46     
+                                                          
+    C:\ti\ccsv7\tools\compiler\ti-cgt-msp430_16.9.6.LTS\lib\rts430_eabi.lib
+       copy_decompress_lzss.obj   124    0         0      
+       autoinit.obj               110    0         0      
+       cpy_tbl.obj                90     0         0      
+       lsr16.obj                  76     0         0      
+       lsl16.obj                  44     0         0      
+       memcmp.obj                 34     0         0      
+       boot_special.obj           26     0         0      
+       copy_zero_init.obj         20     0         0      
+       memset.obj                 20     0         0      
+       mult16.obj                 20     0         0      
+       copy_decompress_none.obj   18     0         0      
+       memcpy.obj                 18     0         0      
+       epilog.obj                 16     0         0      
+       strlen.obj                 14     0         0      
+       isr_trap.obj               8      0         0      
+       exit.obj                   6      0         0      
+       pre_init.obj               4      0         0      
+       boot.obj                   0      2         0      
+       int02.obj                  0      2         0      
+       int03.obj                  0      2         0      
+       int05.obj                  0      2         0      
+       int06.obj                  0      2         0      
+       int07.obj                  0      2         0      
+       int08.obj                  0      2         0      
+       int09.obj                  0      2         0      
+       int10.obj                  0      2         0      
+       int12.obj                  0      2         0      
+       int13.obj                  0      2         0      
+       int14.obj                  0      2         0      
+       startup.obj                2      0         0      
+    +--+--------------------------+------+---------+---------+
+       Total:                     650    24        0      
+                                                          
+       Stack:                     0      0         80     
+       Linker Generated:          0      54        0      
+    +--+--------------------------+------+---------+---------+
+       Grand Total:               5526   152       126    
+
+
+LINKER GENERATED COPY TABLES
+
+__TI_cinit_table @ 0000960e records: 2, size/record: 4, table size: 8
+	.data: load addr=000095e0, load size=00000024 bytes, run addr=00000200, run size=00000020 bytes, compression=copy
+	.bss: load addr=0000960a, load size=00000004 bytes, run addr=00000220, run size=0000000e bytes, compression=zero_init
+
+
+LINKER GENERATED HANDLER TABLE
+
+__TI_handler_table @ 00009604 records: 3, size/record: 2, table size: 6
+	index: 0, handler: __TI_zero_init
+	index: 1, handler: __TI_decompress_lzss
+	index: 2, handler: __TI_decompress_none
+
+
+GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name 
+
+address   name                    
+-------   ----                    
+0000004a  ADC10AE0                
+0000004b  ADC10AE1                
+000001b0  ADC10CTL0               
+000001b2  ADC10CTL1               
+00000048  ADC10DTC0               
+00000049  ADC10DTC1               
+000001b4  ADC10MEM                
+000001bc  ADC10SA                 
+00000057  BCSCTL1                 
+00000058  BCSCTL2                 
+00000053  BCSCTL3                 
+0000958a  C$$EXIT                 
+000010fb  CALBC1_12MHZ            
+000010f9  CALBC1_16MHZ            
+000010ff  CALBC1_1MHZ             
+000010fd  CALBC1_8MHZ             
+000010fa  CALDCO_12MHZ            
+000010f8  CALDCO_16MHZ            
+000010fe  CALDCO_1MHZ             
+000010fc  CALDCO_8MHZ             
+00000056  DCOCTL                  
+00000128  FCTL1                   
+0000012a  FCTL2                   
+0000012c  FCTL3                   
+00008dcc  GetPacket               
+00000000  IE1                     
+00000001  IE2                     
+00000002  IFG1                    
+00000003  IFG2                    
+00008000  IPstackHTMLPost         
+000094f0  IPstackIdle             
+00008a3a  IPstackInit             
+00008b36  MACRead                 
+000087ea  MACWrite                
+000000c0  OA0CTL0                 
+000000c1  OA0CTL1                 
+000000c2  OA1CTL0                 
+000000c3  OA1CTL1                 
+00000022  P1DIR                   
+00000025  P1IE                    
+00000024  P1IES                   
+00000023  P1IFG                   
+00000020  P1IN                    
+00000021  P1OUT                   
+00000027  P1REN                   
+00000026  P1SEL                   
+0000002a  P2DIR                   
+0000002d  P2IE                    
+0000002c  P2IES                   
+0000002b  P2IFG                   
+00000028  P2IN                    
+00000029  P2OUT                   
+0000002f  P2REN                   
+0000002e  P2SEL                   
+0000001a  P3DIR                   
+00000018  P3IN                    
+00000019  P3OUT                   
+00000010  P3REN                   
+0000001b  P3SEL                   
+0000001e  P4DIR                   
+0000001c  P4IN                    
+0000001d  P4OUT                   
+00000011  P4REN                   
+0000001f  P4SEL                   
+00008cf6  PingReply               
+00008e8c  ReplyArpPacket          
+00009166  SPIRead                 
+00009200  SPIWrite                
+00008c1c  SendArpPacket           
+00008930  SetupBasicIPPacket      
+00000172  TACCR0                  
+00000174  TACCR1                  
+00000176  TACCR2                  
+00000162  TACCTL0                 
+00000164  TACCTL1                 
+00000166  TACCTL2                 
+00000160  TACTL                   
+0000012e  TAIV                    
+00000170  TAR                     
+00000192  TBCCR0                  
+00000194  TBCCR1                  
+00000196  TBCCR2                  
+00000182  TBCCTL0                 
+00000184  TBCCTL1                 
+00000186  TBCCTL2                 
+00000180  TBCTL                   
+0000011e  TBIV                    
+00000190  TBR                     
+00000220  TxStatus                
+0000005d  UCA0ABCTL               
+00000062  UCA0BR0                 
+00000063  UCA0BR1                 
+00000060  UCA0CTL0                
+00000061  UCA0CTL1                
+0000005f  UCA0IRRCTL              
+0000005e  UCA0IRTCTL              
+00000064  UCA0MCTL                
+00000066  UCA0RXBUF               
+00000065  UCA0STAT                
+00000067  UCA0TXBUF               
+0000006a  UCB0BR0                 
+0000006b  UCB0BR1                 
+00000068  UCB0CTL0                
+00000069  UCB0CTL1                
+0000006c  UCB0I2CIE               
+00000118  UCB0I2COA               
+0000011a  UCB0I2CSA               
+0000006e  UCB0RXBUF               
+0000006d  UCB0STAT                
+0000006f  UCB0TXBUF               
+00000120  WDTCTL                  
+00000600  __STACK_END             
+00000050  __STACK_SIZE            
+UNDEFED   __TI_BINIT_Base         
+UNDEFED   __TI_BINIT_Limit        
+0000960e  __TI_CINIT_Base         
+00009616  __TI_CINIT_Limit        
+00009604  __TI_Handler_Table_Base 
+0000960a  __TI_Handler_Table_Limit
+UNDEFED   __TI_INITARRAY_Base     
+UNDEFED   __TI_INITARRAY_Limit    
+00009582  __TI_ISR_TRAP           
+00008fb8  __TI_decompress_lzss    
+00009540  __TI_decompress_none    
+0000ffe4  __TI_int02              
+0000ffe6  __TI_int03              
+0000ffea  __TI_int05              
+0000ffec  __TI_int06              
+0000ffee  __TI_int07              
+0000fff0  __TI_int08              
+0000fff2  __TI_int09              
+0000fff4  __TI_int10              
+0000fff8  __TI_int12              
+0000fffa  __TI_int13              
+0000fffc  __TI_int14              
+ffffffff  __TI_pprof_out_hndl     
+ffffffff  __TI_prof_data_size     
+ffffffff  __TI_prof_data_start    
+00009504  __TI_zero_init          
+ffffffff  __c_args__              
+00009570  __mspabi_func_epilog_1  
+0000956e  __mspabi_func_epilog_2  
+0000956c  __mspabi_func_epilog_3  
+0000956a  __mspabi_func_epilog_4  
+00009568  __mspabi_func_epilog_5  
+00009566  __mspabi_func_epilog_6  
+00009564  __mspabi_func_epilog_7  
+0000952c  __mspabi_mpyi           
+0000952c  __mspabi_mpyi_sw        
+0000941c  __mspabi_slli           
+00009444  __mspabi_slli_1         
+00009432  __mspabi_slli_10        
+00009430  __mspabi_slli_11        
+0000942e  __mspabi_slli_12        
+0000942c  __mspabi_slli_13        
+0000942a  __mspabi_slli_14        
+00009428  __mspabi_slli_15        
+00009442  __mspabi_slli_2         
+00009440  __mspabi_slli_3         
+0000943e  __mspabi_slli_4         
+0000943c  __mspabi_slli_5         
+0000943a  __mspabi_slli_6         
+00009438  __mspabi_slli_7         
+00009436  __mspabi_slli_8         
+00009434  __mspabi_slli_9         
+000091b4  __mspabi_srli           
+000091fa  __mspabi_srli_1         
+000091d6  __mspabi_srli_10        
+000091d2  __mspabi_srli_11        
+000091ce  __mspabi_srli_12        
+000091ca  __mspabi_srli_13        
+000091c6  __mspabi_srli_14        
+000091c2  __mspabi_srli_15        
+000091f6  __mspabi_srli_2         
+000091f2  __mspabi_srli_3         
+000091ee  __mspabi_srli_4         
+000091ea  __mspabi_srli_5         
+000091e6  __mspabi_srli_6         
+000091e2  __mspabi_srli_7         
+000091de  __mspabi_srli_8         
+000091da  __mspabi_srli_9         
+00009034  _auto_init              
+000094d6  _c_int00_noargs_noexit  
+0000fffe  _reset_vector           
+000005b0  _stack                  
+00009594  _system_post_cinit      
+00009590  _system_pre_init        
+0000958a  abort                   
+00008472  ackTcp                  
+000090a2  add32                   
+00008f32  chksum                  
+0000910c  copy_in                 
+00000214  data                    
+0000020e  deviceIP                
+000095da  deviceMAC               
+00008672  initMAC                 
+000093ea  initSPI                 
+000094b6  main                    
+00009494  memcmp                  
+00009552  memcpy                  
+00009518  memset                  
+00000228  ptrRxStatus             
+00000200  reply                   
+00000216  routerIP                
+00000208  routerMAC               
+0000021a  serverIP                
+00009574  strlen                  
+00000212  url                     
+
+
+GLOBAL SYMBOLS: SORTED BY Symbol Address 
+
+address   name                    
+-------   ----                    
+00000000  IE1                     
+00000001  IE2                     
+00000002  IFG1                    
+00000003  IFG2                    
+00000010  P3REN                   
+00000011  P4REN                   
+00000018  P3IN                    
+00000019  P3OUT                   
+0000001a  P3DIR                   
+0000001b  P3SEL                   
+0000001c  P4IN                    
+0000001d  P4OUT                   
+0000001e  P4DIR                   
+0000001f  P4SEL                   
+00000020  P1IN                    
+00000021  P1OUT                   
+00000022  P1DIR                   
+00000023  P1IFG                   
+00000024  P1IES                   
+00000025  P1IE                    
+00000026  P1SEL                   
+00000027  P1REN                   
+00000028  P2IN                    
+00000029  P2OUT                   
+0000002a  P2DIR                   
+0000002b  P2IFG                   
+0000002c  P2IES                   
+0000002d  P2IE                    
+0000002e  P2SEL                   
+0000002f  P2REN                   
+00000048  ADC10DTC0               
+00000049  ADC10DTC1               
+0000004a  ADC10AE0                
+0000004b  ADC10AE1                
+00000050  __STACK_SIZE            
+00000053  BCSCTL3                 
+00000056  DCOCTL                  
+00000057  BCSCTL1                 
+00000058  BCSCTL2                 
+0000005d  UCA0ABCTL               
+0000005e  UCA0IRTCTL              
+0000005f  UCA0IRRCTL              
+00000060  UCA0CTL0                
+00000061  UCA0CTL1                
+00000062  UCA0BR0                 
+00000063  UCA0BR1                 
+00000064  UCA0MCTL                
+00000065  UCA0STAT                
+00000066  UCA0RXBUF               
+00000067  UCA0TXBUF               
+00000068  UCB0CTL0                
+00000069  UCB0CTL1                
+0000006a  UCB0BR0                 
+0000006b  UCB0BR1                 
+0000006c  UCB0I2CIE               
+0000006d  UCB0STAT                
+0000006e  UCB0RXBUF               
+0000006f  UCB0TXBUF               
+000000c0  OA0CTL0                 
+000000c1  OA0CTL1                 
+000000c2  OA1CTL0                 
+000000c3  OA1CTL1                 
+00000118  UCB0I2COA               
+0000011a  UCB0I2CSA               
+0000011e  TBIV                    
+00000120  WDTCTL                  
+00000128  FCTL1                   
+0000012a  FCTL2                   
+0000012c  FCTL3                   
+0000012e  TAIV                    
+00000160  TACTL                   
+00000162  TACCTL0                 
+00000164  TACCTL1                 
+00000166  TACCTL2                 
+00000170  TAR                     
+00000172  TACCR0                  
+00000174  TACCR1                  
+00000176  TACCR2                  
+00000180  TBCTL                   
+00000182  TBCCTL0                 
+00000184  TBCCTL1                 
+00000186  TBCCTL2                 
+00000190  TBR                     
+00000192  TBCCR0                  
+00000194  TBCCR1                  
+00000196  TBCCR2                  
+000001b0  ADC10CTL0               
+000001b2  ADC10CTL1               
+000001b4  ADC10MEM                
+000001bc  ADC10SA                 
+00000200  reply                   
+00000208  routerMAC               
+0000020e  deviceIP                
+00000212  url                     
+00000214  data                    
+00000216  routerIP                
+0000021a  serverIP                
+00000220  TxStatus                
+00000228  ptrRxStatus             
+000005b0  _stack                  
+00000600  __STACK_END             
+000010f8  CALDCO_16MHZ            
+000010f9  CALBC1_16MHZ            
+000010fa  CALDCO_12MHZ            
+000010fb  CALBC1_12MHZ            
+000010fc  CALDCO_8MHZ             
+000010fd  CALBC1_8MHZ             
+000010fe  CALDCO_1MHZ             
+000010ff  CALBC1_1MHZ             
+00008000  IPstackHTMLPost         
+00008472  ackTcp                  
+00008672  initMAC                 
+000087ea  MACWrite                
+00008930  SetupBasicIPPacket      
+00008a3a  IPstackInit             
+00008b36  MACRead                 
+00008c1c  SendArpPacket           
+00008cf6  PingReply               
+00008dcc  GetPacket               
+00008e8c  ReplyArpPacket          
+00008f32  chksum                  
+00008fb8  __TI_decompress_lzss    
+00009034  _auto_init              
+000090a2  add32                   
+0000910c  copy_in                 
+00009166  SPIRead                 
+000091b4  __mspabi_srli           
+000091c2  __mspabi_srli_15        
+000091c6  __mspabi_srli_14        
+000091ca  __mspabi_srli_13        
+000091ce  __mspabi_srli_12        
+000091d2  __mspabi_srli_11        
+000091d6  __mspabi_srli_10        
+000091da  __mspabi_srli_9         
+000091de  __mspabi_srli_8         
+000091e2  __mspabi_srli_7         
+000091e6  __mspabi_srli_6         
+000091ea  __mspabi_srli_5         
+000091ee  __mspabi_srli_4         
+000091f2  __mspabi_srli_3         
+000091f6  __mspabi_srli_2         
+000091fa  __mspabi_srli_1         
+00009200  SPIWrite                
+000093ea  initSPI                 
+0000941c  __mspabi_slli           
+00009428  __mspabi_slli_15        
+0000942a  __mspabi_slli_14        
+0000942c  __mspabi_slli_13        
+0000942e  __mspabi_slli_12        
+00009430  __mspabi_slli_11        
+00009432  __mspabi_slli_10        
+00009434  __mspabi_slli_9         
+00009436  __mspabi_slli_8         
+00009438  __mspabi_slli_7         
+0000943a  __mspabi_slli_6         
+0000943c  __mspabi_slli_5         
+0000943e  __mspabi_slli_4         
+00009440  __mspabi_slli_3         
+00009442  __mspabi_slli_2         
+00009444  __mspabi_slli_1         
+00009494  memcmp                  
+000094b6  main                    
+000094d6  _c_int00_noargs_noexit  
+000094f0  IPstackIdle             
+00009504  __TI_zero_init          
+00009518  memset                  
+0000952c  __mspabi_mpyi           
+0000952c  __mspabi_mpyi_sw        
+00009540  __TI_decompress_none    
+00009552  memcpy                  
+00009564  __mspabi_func_epilog_7  
+00009566  __mspabi_func_epilog_6  
+00009568  __mspabi_func_epilog_5  
+0000956a  __mspabi_func_epilog_4  
+0000956c  __mspabi_func_epilog_3  
+0000956e  __mspabi_func_epilog_2  
+00009570  __mspabi_func_epilog_1  
+00009574  strlen                  
+00009582  __TI_ISR_TRAP           
+0000958a  C$$EXIT                 
+0000958a  abort                   
+00009590  _system_pre_init        
+00009594  _system_post_cinit      
+000095da  deviceMAC               
+00009604  __TI_Handler_Table_Base 
+0000960a  __TI_Handler_Table_Limit
+0000960e  __TI_CINIT_Base         
+00009616  __TI_CINIT_Limit        
+0000ffe4  __TI_int02              
+0000ffe6  __TI_int03              
+0000ffea  __TI_int05              
+0000ffec  __TI_int06              
+0000ffee  __TI_int07              
+0000fff0  __TI_int08              
+0000fff2  __TI_int09              
+0000fff4  __TI_int10              
+0000fff8  __TI_int12              
+0000fffa  __TI_int13              
+0000fffc  __TI_int14              
+0000fffe  _reset_vector           
+ffffffff  __TI_pprof_out_hndl     
+ffffffff  __TI_prof_data_size     
+ffffffff  __TI_prof_data_start    
+ffffffff  __c_args__              
+UNDEFED   __TI_BINIT_Base         
+UNDEFED   __TI_BINIT_Limit        
+UNDEFED   __TI_INITARRAY_Base     
+UNDEFED   __TI_INITARRAY_Limit    
+
+[208 symbols]
