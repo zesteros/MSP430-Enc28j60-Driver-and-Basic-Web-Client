@@ -14,7 +14,9 @@ unsigned char deviceIP[4] = {192,168,3,100};
 // IP address of the router
 unsigned char routerIP[4] = {192,168,3,1};
 
-unsigned char serverIP[4] = {192,168,3,11};
+unsigned char serverIP[4] = {192,168,3,150};
+
+unsigned char serverMAC[6] = {0x94, 0x65, 0x9c, 0xf3, 0xd9, 0xf0};
 
 unsigned char dnsIP[4] = {8,8,8,8};
 
@@ -32,15 +34,17 @@ int IPstackHTMLPost(const char* url, const char* data, char* reply)
   unsigned char packet[MAXPACKETLEN];
 /*Expand the memory assigned to packet according TCP Packet*/
   memset(packet,0,sizeof(TCPhdr));//zero the memory as we need all flags = 0
-
   //Syn server
   /*Setup the packet according tcp protocol*/
   SetupBasicIPPacket(packet, TCPPROTOCOL, serverIP);
   TCPhdr* tcp = (TCPhdr*)packet;
+  //void * memcpy ( void * destination, const void * source, size_t num );
+  //memcpy( tcp->ip.eth.DestAddrs, serverMAC, sizeof(serverMAC));
   /*Puerto de fuente */
   tcp->sourcePort = HTONS(0xe2d7);
   /*Puerto de destino 80*/
   tcp->destPort = HTONS(80);
+
   //Seq No and Ack No are zero
   tcp->seqNo[0] = 1;
   tcp->hdrLen = (sizeof(TCPhdr)-sizeof(IPhdr))/4;
@@ -79,6 +83,7 @@ int IPstackHTMLPost(const char* url, const char* data, char* reply)
   //Now copy in the data
   /*Copia los datos*/
   int datalen = strlen(data);
+  //memcpy ( void * destination, const void * source, size_t num );
   memcpy( packet + sizeof(TCPhdr), data, datalen);
   /*Ahora la longitud es la longitud del paquete más la longitud de los datos*/
   len = sizeof(TCPhdr) + datalen;
@@ -96,8 +101,19 @@ int IPstackHTMLPost(const char* url, const char* data, char* reply)
     GetPacket(TCPPROTOCOL, packet);
   }while(!(tcp->destPort==HTONS(0xe2d7)));
   /*Copia la respuesta al paquete*/
+
+
   memcpy( reply, packet + len -7, 7);
   ackTcp(tcp, len);
+  tcp->chksum = 0;
+  tcp->ip.chksum = 0;
+  pseudochksum = chksum(TCPPROTOCOL+len-sizeof(IPhdr),tcp->ip.source,sizeof(deviceIP)*2);
+  tcp->chksum = HTONS(~(chksum(pseudochksum, packet + sizeof(IPhdr),len-sizeof(IPhdr))));
+  tcp->ip.chksum = HTONS(~(chksum(0, packet + sizeof(EtherNetII), sizeof(IPhdr)-sizeof(EtherNetII))));
+
+
+
+  /*ETHERNET FRAME CHECK SEQUENCE INCORRECT*/
   MACWrite( packet, len);
 
   /*Finaliza la transmisión*/
@@ -110,15 +126,16 @@ int IPstackHTMLPost(const char* url, const char* data, char* reply)
   tcp->chksum = HTONS(~(chksum(pseudochksum,packet + sizeof(IPhdr), len-sizeof(IPhdr))));
   tcp->ip.chksum = HTONS(~(chksum(0, packet + sizeof(EtherNetII), sizeof(IPhdr)-sizeof(EtherNetII))));
   MACWrite(packet,len);
-  memcpy(tcp, reply, sizeof(tcp));
+  //memcpy(tcp, reply, sizeof(tcp));
   //Now we need to copy the payload to the reply buffer and ack the reply
   do{
-       /*Obtiene los datos mientras el puerto de destino sea diferente al e2d7*/
-     GetPacket(TCPPROTOCOL, packet);
-   }while(!(tcp->destPort==HTONS(0xe2d7)));
+        /*Obtiene los datos mientras el puerto de destino sea diferente al e2d7*/
+      GetPacket(TCPPROTOCOL, packet);
+    }while(!(tcp->destPort==HTONS(0xe2d7)));
+
    /*Responde*/
-   ackTcp(tcp,len);
-   MACWrite( packet, len );
+   //ackTcp(tcp,len);
+   //MACWrite( packet, len );
   return 0;
 }
 
@@ -185,7 +202,7 @@ void SetupBasicIPPacket( unsigned char* packet, unsigned char protocol, unsigned
   /*Define el tipo de IP*/
   ip->eth.type = HTONS(IPPACKET);
   /*Copia a la direccion de destino de la IP la mac del router*/
-  memcpy( ip->eth.DestAddrs, routerMAC, sizeof(routerMAC) );
+  memcpy( ip->eth.DestAddrs, serverMAC, sizeof(serverMAC) );
   /*Copia a la dirección del fuente la mac de este dispositivo*/
   memcpy( ip->eth.SrcAddrs, deviceMAC, sizeof(deviceMAC) );
   /*Establece la version del protocolo (v4)*/
