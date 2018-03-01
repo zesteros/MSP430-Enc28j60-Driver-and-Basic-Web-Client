@@ -1,0 +1,28 @@
+ERRORES A CORREGIR:
+
+El paquete no llega al destino (PC) porque no conoce la MAC
+(Contestar ARP)
+
+Solución: Asignar ARP estática en windows
+¿Cómo?
+netsh -c "interface ipv4"
+set neighbors "Ethernet" 192.168.3.100 00-a0-c9-14-c8-00
+
+El paquete si sincroniza pero ya no se puede enviar el acuse de recibo
+(RST en paquetes de servidor).
+
+Solución:
+Reiniciar AP (Desconectar o Hard Reset), dispositivos y/o limpiar el cache de ARP y reasignar direcciones.
+
+Cómo limpiar ARP
+nets interface ip delete arpcache
+
+Posibles soluciones:
+
+Opciones desactivadas de TCP (8 bytes - MSS - SACKPERM).
+tcp->ip.ident = 0xDEED; en línea 63 (Investigar que es).
+Largo de datos (aun por descartar).
+Apuntador de encabezado http (data) no es asignado correctamente (aun por descartar - 
+funciono reasignando valor).
+Finalizar conexión correctamente (el servidor manda paquetes hasta RST despues de 
+http exitoso).

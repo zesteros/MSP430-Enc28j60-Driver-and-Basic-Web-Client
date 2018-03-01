@@ -28,35 +28,3 @@ Parts complete:
 6. Checked by downloading basic web page. Note currently will not download but most of the code is there.
 
 Now that the basic client is working focus is on finishing TCP cleanly and general tidy up of the code base.
-
-
-Edit: 25/02/2018 by Angelo Loza
-
-The goal of the use of this work by Duncans Pumpkin is connect throught internet a board 
-manufactured by scalini http://indscalini.com/
-An academic board with a texas microcontroller MSP430F2274 and a Ethernet Shield ENC28J60
-
-The communication is with SPI:
-MSP430F2274 ----> ENC28J60-H
-GND       GND
-VCC       3.3V & RST
-
-P2.0      CS 	- P2.0/ACLK/A0/OA0I0 	 	PIN 8 	IN MSP430F2274 BOARD
-UCB0SOMI  MISO 	- P3.2/UCB0SOMI/UCB0SCL  	PIN 13 	IN MSP430F2274 BOARD
-UCB0CLK   SCK 	- P3.3/UCB0CLK/UCA0STE  	PIN 14 	IN MSP430F2274 BOARD
-USB0SIMO  MOSI 	- P3.1/UCB0SIMO/UCB0SDA 	PIN 12 	IN MSP430F2274 BOARD
-
-If you're using Code Composer Studio v7 give some compilation errors, with
-spi_test.c and arp_test.c the solution thar I found is move the files to another folder.
-Disable register optimization in project properties.
-
-The main objective is communicate two boards in local lan, sending http GET request and receive 
-it in the second board to turn on a water pump when a cistern is empty. 
-
-The code of Duncan below contains everything to do that, whatever, the part of
-web client it's somewhat working and the purpose is leave it working 100%.
-
-
-
-
-

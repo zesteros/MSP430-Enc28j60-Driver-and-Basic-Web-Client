@@ -2,7 +2,7 @@
 #define IPSTACK_H
 
 int IPstackInit();
-int IPstackHTMLPost(const char* url, const char* data, char* reply);
+int IPstackHTMLPost(const char* url,const char* data, char* reply);
 int IPstackIdle();
 void SendPing( unsigned char* targetIP );
 

@@ -2,7 +2,7 @@
 #include "ipstack.h"
 
 const char* url = "192.168.3.150";
-const char* data = "GET /sensortest.php/?sensor=000000 HTTP/1.1\r\nHost: 192.168.3.150\r\n\r\n";
+const char* data = "GET /admin/sensor/inuse/?id=5f3ee97228dab60a888b7128 HTTP/1.1\r\nHost: 192.168.3.150\r\n\r\n";
 char reply[] = "SUCCESS";
 
 int main(void){
